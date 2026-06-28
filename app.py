@@ -4,7 +4,7 @@ from google.genai import types
 
 # Page Configuration
 st.set_page_config(
-    page_title="VeriRank AI v3.7 - Enterprise Local SEO",
+    page_title="VeriRank AI v3.8 - Ultimate GMB Automation",
     page_icon="🎯",
     layout="centered"
 )
@@ -14,14 +14,14 @@ st.title("🎯 VeriRank AI")
 st.subheader("Smart Local SEO Review Agent")
 st.write("Casual customer feedback ko 100% genuine aur keyword-rich Google reviews mein badlein.")
 
-# 100% PURE BACKEND SECRETS (Sidebar UI Jhanjhat Completely Removed)
+# PURE BACKEND SECRETS LAYER
 if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"].strip() != "":
     api_key = st.secrets["GEMINI_API_KEY"]
 else:
     st.error("🛑 **Configuration Alert:** Cloud configuration mein API Key missing hai. Meharbani kar ke Streamlit Dashboard ke Secrets mein key save karein.")
     st.stop()
 
-# User Interface (Clean Client Layout)
+# User Interface (Advanced Client Layout)
 st.write("---")
 st.markdown("### 🏬 Business Context")
 
@@ -31,6 +31,13 @@ with col1:
 with col2:
     category = st.text_input("Product Category:", placeholder="Eg: HP Core i7 Laptops")
 
+# NEW AUTOMATION FEATURE: Shopkeeper apna GMB Short Link yahan dalega
+gmb_url = st.text_input(
+    "Google Review Link (GMB Link):", 
+    placeholder="Eg: https://g.page/r/XXXXX/review ya short maps URL",
+    help="Apne Google Business Profile dashboard se 'Get more reviews' wala share link yahan paste karein."
+)
+
 st.markdown("### 🧑‍💻 Customer Feedback Section")
 user_input = st.text_area(
     "Aapka shop par experience kaisa raha? (Roman Urdu, Pashto mix ya English mein likhein):",
@@ -39,7 +46,7 @@ user_input = st.text_area(
 
 # System Instructions Matrix
 SYSTEM_INSTRUCTION = f"""
-You are "VeriRank AI v3.7", an elite Enterprise Local SEO Architect. Your objective is to transform raw customer feedback into professional, keyword-rich English Google Reviews.
+You are "VeriRank AI v3.8", an elite Enterprise Local SEO Architect. Your objective is to transform raw customer feedback into professional, keyword-rich English Google Reviews.
 
 CONTEXT FOR THIS REVIEW:
 - Target Business Name: {shop_name if shop_name else "the store"}
@@ -94,10 +101,21 @@ if st.button("Generate Optimized SEO Review 🚀", use_container_width=True):
             if response and response.text:
                 st.success("Review generated successfully! 🎉")
                 st.markdown("### 📋 Final Optimized Review (Copy this):")
-                st.code(response.text.strip(), language="")
-                st.markdown("💡 **Next Step:** Customer can copy this text and paste it directly onto your Google Business Profile.")
+                
+                # Streamlit's native code box copy layout
+                generated_text = response.text.strip()
+                st.code(generated_text, language="")
+                
+                # THE AUTOMATION BRIDGE BUTTON: Agar GMB URL mojood hai toh deep link active ho jayega
+                if gmb_url.strip() != "":
+                    st.write("---")
+                    st.markdown("#### ⚡ Real-Time Placement Automation:")
+                    st.write("Upar diye gaye text ko copy karein aur neeche diye gaye button par click kar ke direct Google Maps par paste kar dein!")
+                    st.link_button("Post Directly on Google Maps/GMB 🚀", url=gmb_url.strip(), use_container_width=True)
+                else:
+                    st.info("💡 **Shopkeeper Note:** Agar aap niche 'Direct GMB Redirect Button' chahte hain, toh upar apna Google Review link darj karein.")
             else:
                 st.error("Server endpoints par temporary load hai. Dubara koshish karein.")
 
 st.write("---")
-st.caption("VeriRank AI v3.7 | Peshawar Enterprise Edition | Google-Kaggle Bootcamp")
+st.caption("VeriRank AI v3.8 | Ultimate GMB Automation Pipeline | Google-Kaggle Bootcamp Edition")
