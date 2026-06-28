@@ -4,7 +4,7 @@ from google.genai import types
 
 # Page Configuration
 st.set_page_config(
-    page_title="VeriRank AI v3.6 - Enterprise Local SEO",
+    page_title="VeriRank AI v3.7 - Enterprise Local SEO",
     page_icon="🎯",
     layout="centered"
 )
@@ -14,36 +14,32 @@ st.title("🎯 VeriRank AI")
 st.subheader("Smart Local SEO Review Agent")
 st.write("Casual customer feedback ko 100% genuine aur keyword-rich Google reviews mein badlein.")
 
-# DYNAMIC SECRETS MANAGER: Baar-baar key daalne ki janjhat khatam!
-if "GEMINI_API_KEY" in st.secrets:
+# 100% PURE BACKEND SECRETS (Sidebar UI Jhanjhat Completely Removed)
+if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"].strip() != "":
     api_key = st.secrets["GEMINI_API_KEY"]
 else:
-    # Agar local laptop par chalayein toh sidebar backup dikhega
-    api_key = st.sidebar.text_input("Gemini API Key darj karein (Local Backup):", type="password")
-
-if not api_key:
-    st.info("Meharbani kar ke Streamlit Cloud par Secrets set karein ya local backup key lagayein.", icon="🔑")
+    st.error("🛑 **Configuration Alert:** Cloud configuration mein API Key missing hai. Meharbani kar ke Streamlit Dashboard ke Secrets mein key save karein.")
     st.stop()
 
-# User Interface (Advanced SaaS Inputs)
+# User Interface (Clean Client Layout)
 st.write("---")
-st.markdown("### 🏬 Business & Product Context")
+st.markdown("### 🏬 Business Context")
 
 col1, col2 = st.columns(2)
 with col1:
-    shop_name = st.text_input("Dukan / Business Ka Naam:", placeholder="Eg: Bilal Laptops")
+    shop_name = st.text_input("Business Name / Dukan Ka Naam:", placeholder="Eg: Waqar Laptop")
 with col2:
-    category = st.text_input("Product / Service Category:", placeholder="Eg: Core i7 Laptops")
+    category = st.text_input("Product Category:", placeholder="Eg: HP Core i7 Laptops")
 
 st.markdown("### 🧑‍💻 Customer Feedback Section")
 user_input = st.text_area(
     "Aapka shop par experience kaisa raha? (Roman Urdu, Pashto mix ya English mein likhein):",
-    placeholder="Eg: hum shopkeeper ko bahuth daad day rahay hai really appreciate him..."
+    placeholder="Eg: dukaandar ka behaviour zbrdst tha..."
 )
 
 # System Instructions Matrix
 SYSTEM_INSTRUCTION = f"""
-You are "VeriRank AI v3.6", an elite Enterprise Local SEO Architect. Your objective is to transform raw customer feedback into professional, keyword-rich English Google Reviews.
+You are "VeriRank AI v3.7", an elite Enterprise Local SEO Architect. Your objective is to transform raw customer feedback into professional, keyword-rich English Google Reviews.
 
 CONTEXT FOR THIS REVIEW:
 - Target Business Name: {shop_name if shop_name else "the store"}
@@ -63,7 +59,7 @@ if st.button("Generate Optimized SEO Review 🚀", use_container_width=True):
     elif shop_name.strip() == "" or category.strip() == "":
         st.warning("Meharbani kar ke Business Name aur Category zaroor darj karein.")
     else:
-        with st.spinner("VeriRank AI backend tunnel se connect ho raha hai..."):
+        with st.spinner("VeriRank AI secure cloud infrastructure par review process kar raha hai..."):
             
             response = None
             last_error = ""
@@ -96,12 +92,12 @@ if st.button("Generate Optimized SEO Review 🚀", use_container_width=True):
 
             # Final Display Layout
             if response and response.text:
-                st.success("Aapka Genuine & Optimized Review Taiyar Hai! 🎉")
-                st.markdown("#### 📋 Neeche diye gaye review ko Copy karein:")
+                st.success("Review generated successfully! 🎉")
+                st.markdown("### 📋 Final Optimized Review (Copy this):")
                 st.code(response.text.strip(), language="")
-                st.markdown("💡 **Next Step:** Ab customer is text ko copy kar ke seedha aapke Google Business Profile par paste kar sakta hai!")
+                st.markdown("💡 **Next Step:** Customer can copy this text and paste it directly onto your Google Business Profile.")
             else:
                 st.error("Server endpoints par temporary load hai. Dubara koshish karein.")
 
 st.write("---")
-st.caption("VeriRank AI v3.6 | Powered by Secure Cloud Secrets Pipeline | Google-Kaggle Bootcamp Edition")
+st.caption("VeriRank AI v3.7 | Peshawar Enterprise Edition | Google-Kaggle Bootcamp")
