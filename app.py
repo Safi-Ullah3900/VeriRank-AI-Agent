@@ -1,82 +1,86 @@
 import streamlit as st
+import random
 from google import genai
 from google.genai import types
 
 # Page Configuration
 st.set_page_config(
-    page_title="VeriRank AI v3.8 - Ultimate GMB Automation",
+    page_title="VeriRank AI v3.9 - Enterprise SaaS Edition",
     page_icon="🎯",
     layout="centered"
 )
 
 # App Title & Branding
 st.title("🎯 VeriRank AI")
-st.subheader("Smart Local SEO Review Agent")
+st.subheader("Enterprise Local SEO Review Generator")
 st.write("Casual customer feedback ko 100% genuine aur keyword-rich Google reviews mein badlein.")
 
-# PURE BACKEND SECRETS LAYER
-if "GEMINI_API_KEY" in st.secrets and st.secrets["GEMINI_API_KEY"].strip() != "":
+# 100% B2B SAAS SECRETS MANAGEMENT LAYER
+# Hiding core configurations from end-users entirely
+if "GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["GEMINI_API_KEY"]
 else:
-    st.error("🛑 **Configuration Alert:** Cloud configuration mein API Key missing hai. Meharbani kar ke Streamlit Dashboard ke Secrets mein key save karein.")
+    st.error("🛑 **Configuration Error:** API Key missing hai backend secrets mein.")
     st.stop()
 
-# User Interface (Advanced Client Layout)
+# Auto-locking merchant profiles natively from cloud environment settings
+shop_name = st.secrets.get("MERCHANT_NAME", "Shaheen Laptop Wholesaler").strip()
+gmb_url = st.secrets.get("MERCHANT_GMB_URL", "https://g.page/r/CfE02PXX8HUQEAE/review").strip()
+
+# User Interface (Ultra Clean Customer-First Layout)
 st.write("---")
-st.markdown("### 🏬 Business Context")
+st.markdown("### 📝 Customer Feedback Station")
+st.caption(f"Review being generated securely for: **{shop_name}**")
 
-col1, col2 = st.columns(2)
-with col1:
-    shop_name = st.text_input("Business Name / Dukan Ka Naam:", placeholder="Eg: Waqar Laptop")
-with col2:
-    category = st.text_input("Product Category:", placeholder="Eg: HP Core i7 Laptops")
+# Only dynamic inputs relevant to the walk-in consumer are exposed
+category = st.text_input("Product / Item Purchased:", placeholder="Eg: HP EliteBook Core i7, Dell Laptop")
 
-# NEW AUTOMATION FEATURE: Shopkeeper apna GMB Short Link yahan dalega
-gmb_url = st.text_input(
-    "Google Review Link (GMB Link):", 
-    placeholder="Eg: https://g.page/r/XXXXX/review ya short maps URL",
-    help="Apne Google Business Profile dashboard se 'Get more reviews' wala share link yahan paste karein."
-)
-
-st.markdown("### 🧑‍💻 Customer Feedback Section")
 user_input = st.text_area(
-    "Aapka shop par experience kaisa raha? (Roman Urdu, Pashto mix ya English mein likhein):",
-    placeholder="Eg: dukaandar ka behaviour zbrdst tha..."
+    "Aapka dukan par experience kaisa raha? (Roman Urdu, Pashto mix ya English mein likhein):",
+    placeholder="Eg: bahuth hi barhia experience raha, pricing achi thi..."
 )
 
-# System Instructions Matrix
+# ADVANCED NLP STRUCTURAL VARIATION ENGINE (Breaking the AI footprint)
+# Generating a runtime random seed to shuffle text generation patterns dynamically
+style_seed = random.choice([
+    "Start by discussing the product architecture and pricing structure.",
+    "Start with the transactional authenticity and vendor reputation in Peshawar.",
+    "Start directly with a highly personalized customer service acknowledgment."
+])
+
 SYSTEM_INSTRUCTION = f"""
-You are "VeriRank AI v3.8", an elite Enterprise Local SEO Architect. Your objective is to transform raw customer feedback into professional, keyword-rich English Google Reviews.
+You are "VeriRank AI v3.9", an advanced NLP Engine specializing in Local SEO Architecture. Your objective is to translate casual, raw customer feedback into professional, natural English Google Reviews.
 
-CONTEXT FOR THIS REVIEW:
-- Target Business Name: {shop_name if shop_name else "the store"}
-- Product/Service Category: {category if category else "products and services"}
+TARGET MERCHANT DATA:
+- Business Name: {shop_name}
+- Specific Product Focus: {category if category else "high-quality computers and laptops"}
+- Runtime Prompt Seed Structure: {style_seed}
 
-STRICT ETHICAL GUARDRAILS:
-1. ZERO HALLUCINATION: Rely ONLY on facts provided in the user's feedback. If they mention a critique, convert it into a constructive, honest point. Authenticity ranks higher on Google.
-2. NATURAL SEO INJECTION: Weave in high-intent local search keywords naturally based on the category and location (e.g., "best laptop shop in Peshawar", "wholesale photocopier machine prices", "Gul Haji Plaza tech market").
+STRICT NLP ANTI-SPAM & REPETITION BAN RULES:
+1. NEVER start the review with generic template structures like "My experience with...", "I recently bought...", or "Highly recommend this place". 
+2. SYNONYM DIVERSITY: Actively cycle between different high-level vocabularies. Replace overused terms like "excellent" or "good" with words like "seamless dealing", "authentic setup", "competitive market rates", "robust inventory infrastructure".
+3. TYPO CORRECTION CORRIDOR: Autonomously detect and correct technical user typos (e.g., if user inputs "cope i8", elegantly transform it into realistic tech phrases like "Intel Core series setup" or "high-spec processing machine").
+4. ZERO HALLUCINATION: Build the review solely upon the facts mentioned by the customer. Keep it 100% true to the operational context.
 
 OUTPUT FORMAT:
-Return ONLY the final review text. No markdown explanations, no notes.
+Return ONLY the clean final review text. No formatting, no markdown headers, no introductory sentences.
 """
 
 if st.button("Generate Optimized SEO Review 🚀", use_container_width=True):
     if user_input.strip() == "":
-        st.warning("Meharbani kar ke pehle customer ka raw feedback yahan likhein.")
-    elif shop_name.strip() == "" or category.strip() == "":
-        st.warning("Meharbani kar ke Business Name aur Category zaroor darj karein.")
+        st.warning("Meharbani kar ke pehle apna feedback section fill karein.")
     else:
-        with st.spinner("VeriRank AI secure cloud infrastructure par review process kar raha hai..."):
+        with st.spinner("VeriRank AI dynamic pipelines par secure data processing chal rahi hai..."):
             
             response = None
             last_error = ""
-            models_to_try = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-3-flash-preview", "gemini-1.5-flash"]
+            models_to_try = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
             
             try:
                 client = genai.Client(api_key=api_key)
                 config = types.GenerateContentConfig(
                     system_instruction=SYSTEM_INSTRUCTION,
-                    temperature=0.3
+                    temperature=0.65 # Slight increase to boost organic vocabulary variety
                 )
                 
                 # Resilient Fallback Loop
@@ -99,23 +103,18 @@ if st.button("Generate Optimized SEO Review 🚀", use_container_width=True):
 
             # Final Display Layout
             if response and response.text:
-                st.success("Review generated successfully! 🎉")
-                st.markdown("### 📋 Final Optimized Review (Copy this):")
+                st.success("Aapka Unique & Optimized Review Taiyar Hai! 🎉")
                 
-                # Streamlit's native code box copy layout
                 generated_text = response.text.strip()
                 st.code(generated_text, language="")
                 
-                # THE AUTOMATION BRIDGE BUTTON: Agar GMB URL mojood hai toh deep link active ho jayega
-                if gmb_url.strip() != "":
-                    st.write("---")
-                    st.markdown("#### ⚡ Real-Time Placement Automation:")
-                    st.write("Upar diye gaye text ko copy karein aur neeche diye gaye button par click kar ke direct Google Maps par paste kar dein!")
-                    st.link_button("Post Directly on Google Maps/GMB 🚀", url=gmb_url.strip(), use_container_width=True)
-                else:
-                    st.info("💡 **Shopkeeper Note:** Agar aap niche 'Direct GMB Redirect Button' chahte hain, toh upar apna Google Review link darj karein.")
+                # Direct GMB Pipeline Link Activation
+                st.write("---")
+                st.markdown("#### ⚡ Real-Time Placement Automation:")
+                st.write("Upar diye gaye unique text ko copy karein aur neeche diye gaye button par click kar ke direct maps par paste kar dein!")
+                st.link_button("Post Directly on Google Maps/GMB 🚀", url=gmb_url, use_container_width=True)
             else:
                 st.error("Server endpoints par temporary load hai. Dubara koshish karein.")
 
 st.write("---")
-st.caption("VeriRank AI v3.8 | Ultimate GMB Automation Pipeline | Google-Kaggle Bootcamp Edition")
+st.caption("VeriRank AI v3.9 | Pure SaaS Architectural Edition | Developed for Google-Kaggle Bootcamp Submission")
