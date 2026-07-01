@@ -6,12 +6,12 @@ from google.genai import types
 
 # Page Configuration
 st.set_page_config(
-    page_title="VeriRank AI v4.0 - Unprecedented SaaS",
+    page_title="VeriRank AI v4.1 - Advanced UX Dialog",
     page_icon="🎯",
     layout="centered"
 )
 
-# Initialize Session State Database (Local memory backup before cloud DB link)
+# Initialize Session State Database for Logs
 if "review_logs" not in st.session_state:
     st.session_state.review_logs = [
         {"time": "03:10 AM", "item": "HP Core i7 10th Gen", "status": "Copied & Posted"},
@@ -22,18 +22,36 @@ if "review_logs" not in st.session_state:
 st.sidebar.markdown("### 🏢 VeriRank Admin Panel")
 app_mode = st.sidebar.radio("Go To Interface:", ["Customer Station 🧑‍💻", "Merchant Dashboard 📊"])
 
-# 100% SECRETS MANAGEMENT LAYER
+# Secure Secrets Fetching
 if "GEMINI_API_KEY" in st.secrets:
     api_key = st.secrets["GEMINI_API_KEY"]
 else:
     api_key = st.sidebar.text_input("Gemini API Key Backup:", type="password")
 
 shop_name = st.secrets.get("MERCHANT_NAME", "Shaheen Laptop Wholesaler").strip()
-gmb_url = st.secrets.get("MERCHANT_GMB_URL", "https://g.page/r/CfE02PXX8HUQECE/review").strip()
+gmb_url = st.secrets.get("MERCHANT_GMB_URL", "https://g.page/r/CfE02PXX8HUQEAE/review").strip()
 
 if not api_key:
     st.info("Meharbani kar ke API Key configure karein.")
     st.stop()
+
+# ==========================================
+# 🆕 THE ADVANCED POPUP (DIALOG) LOGIC ENGINE
+# ==========================================
+@st.dialog("🎯 VeriRank AI - Review Preview & Publish")
+def show_publish_popup(review_text, target_url):
+    st.markdown("### Aapka Genuine Review Taiyar Hai!")
+    st.write("Aap niche diye gaye text mein apni marzi ke mutabiq tabdeeli (editing) bhi kar sakte hain:")
+    
+    # User can edit the generated review directly inside this popup box
+    final_user_review = st.text_area("📋 Review Text (Edit if needed):", value=review_text, height=180)
+    
+    st.write("---")
+    st.markdown("#### **Agla Qadam (Next Step):**")
+    st.info("💡 Upar diye gaye text ko copy karein, phir niche diye gaye button par click kar ke direct Google Maps par paste kar dein!")
+    
+    # The Action Launchpad Button inside the popup
+    st.link_button("Press to Publish Review 🚀", url=target_url, use_container_width=True)
 
 # ==========================================
 # INTERFACE 1: CUSTOMER FEEDBACK STATION
@@ -60,7 +78,7 @@ if app_mode == "Customer Station 🧑‍💻":
     ])
 
     SYSTEM_INSTRUCTION = f"""
-    You are "VeriRank AI v4.0", an elite NLP Engine specializing in Local SEO Architecture. Translate raw inputs (Roman Urdu/Pashto) into high-end English Google Reviews.
+    You are "VeriRank AI v4.1", an elite NLP Engine specializing in Local SEO Architecture. Translate raw inputs (Roman Urdu/Pashto) into high-end English Google Reviews.
     Target Business: {shop_name}
     Product Focus: {category if category else "hardware items"}
     Prompt Style Seed: {style_seed}
@@ -71,7 +89,7 @@ if app_mode == "Customer Station 🧑‍💻":
         if user_input.strip() == "":
             st.warning("Meharbani kar ke pehle apna feedback section fill karein.")
         else:
-            with st.spinner("VeriRank AI lines process kar raha hai..."):
+            with st.spinner("VeriRank AI secure cloud pipelines process kar raha hai..."):
                 response = None
                 models_to_try = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
                 
@@ -91,22 +109,18 @@ if app_mode == "Customer Station 🧑‍💻":
                     st.error(f"Setup error: {e}")
 
                 if response and response.text:
-                    st.success("Aapka Unique & Optimized Review Taiyar Hai! 🎉")
                     generated_text = response.text.strip()
-                    st.code(generated_text, language="")
                     
-                    # LOGGING ENGINE: Saving to local state memory pipeline
+                    # LOGGING ENGINE: Save to internal logs
                     now = datetime.datetime.now().strftime("%I:%M %p")
                     st.session_state.review_logs.append({
                         "time": now,
                         "item": category if category else "General Hardware",
-                        "status": "Generated & Pushed"
+                        "status": "Generated & PopUp Opened"
                     })
                     
-                    st.write("---")
-                    st.markdown("#### ⚡ Real-Time Placement Automation:")
-                    st.write("Upar diye gaye unique text ko copy karein aur neeche diye gaye button par click kar ke direct maps par paste kar edin!")
-                    st.link_button("Post Directly on Google Maps/GMB 🚀", url=gmb_url, use_container_width=True)
+                    # TRIGGER THE POPUP: Main page flow stays clean, modal opens!
+                    show_publish_popup(generated_text, gmb_url)
 
 # ==========================================
 # INTERFACE 2: MERCHANT ANALYTICS DASHBOARD
@@ -118,7 +132,6 @@ elif app_mode == "Merchant Dashboard 📊":
     
     st.write("---")
     
-    # Analytical Scorecards Metrics
     total_reviews = len(st.session_state.review_logs)
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -129,15 +142,7 @@ elif app_mode == "Merchant Dashboard 📊":
         st.metric(label="SEO Traffic Signals", value="Active ⚡")
         
     st.markdown("### 📜 Real-Time Generated Review Feed")
-    st.write("Neeche un reviews ka log hai jo customers ne counter par QR code scan kar ke banaye hain:")
-    
-    # Displaying logs inside a premium production data frame layout
-    st.dataframe(
-        st.session_state.review_logs,
-        use_container_width=True
-    )
-    
-    st.info("💡 **SaaS Scaling Tip:** Yeh logs live save ho rahe hain. Jab hum isme cloud database link karenge, toh shop owner dunya ke kisi bhi kone se apni dukan ka data monitor kar sakega.")
+    st.dataframe(st.session_state.review_logs, use_container_width=True)
 
 st.write("---")
-st.caption("VeriRank AI v4.0 | Premium Multi-Tenant SaaS Engine | Developed for Google-Kaggle Bootcamp Submission")
+st.caption("VeriRank AI v4.1 | Premium UI Popup Layout Edition | Google-Kaggle Bootcamp Submission")
