@@ -7,7 +7,7 @@ from google.genai import types
 
 # Page Configuration
 st.set_page_config(
-    page_title="VeriRank AI v4.4 - 1-Click Combo Engine",
+    page_title="VeriRank AI v4.5 - Layman Shield UX",
     page_icon="🎯",
     layout="centered"
 )
@@ -30,58 +30,62 @@ if not api_key:
     st.stop()
 
 # ==========================================
-# 🆕 THE ULTIMATE 1-CLICK JAVASCRIPT POPUP
+# 🆕 THE INTENTIONAL CHECKPOINT DIALOG POPUP
 # ==========================================
-@st.dialog("✨ VeriRank Quick Publish")
+@st.dialog("📢 IMPORTANT: How to Publish")
 def show_combo_popup(review_text, target_url):
-    st.success("🎉 Aapka Review Taiyar Hai!")
-    st.write("Neeche diye gaye review ko dekhlein, aur direct publish karein:")
+    st.warning("⚠️ **Dukan Par Khade Customer Ke Liye Zaroori Note:**", icon="⚠️")
+    st.markdown(
+        """
+        Google ke rules ki wajah se review khud type nahi hoga. 
+        Aapko agli screen par ja kar sirf **PASTE** ka button dabana hai!
+        """
+    )
     
-    # Visual check for the user to read the text
-    st.text_area("📋 Generated Text View:", value=review_text, height=120, disabled=True)
+    # Clean text preview area
+    st.text_area("📋 Aapka Generated Review:", value=review_text, height=100, disabled=True)
     
     st.write("---")
-    st.markdown("### **🎯 Asaan Automation Flow:**")
-    st.caption("Neeche diye gaye magic button ko **sirf ek baar click** karein. Review khud-ba-khud copy ho jayega aur Google Maps open ho jayega. Wahan ja kar bas **Paste** kar dein!")
 
-    # Preparing string sanitation for clean JavaScript injection
+    # Sanitizing string tokens safely for JavaScript execution context
     js_safe_review = review_text.replace("`", "\\`").replace('"', '\\"').replace("\n", "\\n")
     
-    # HIGH-END JAVASCRIPT COMBO BUTTON INJECTION
-    # This executes native browser clipboard storage and redirection in a unified interaction event
+    # HIGH-END INTERCEPTOR JAVASCRIPT
+    # This shows a native alert confirmation box BEFORE redirecting the user to Google Maps
     js_button_code = f"""
     <button id="combo-btn" style="
         width: 100%; 
-        background: linear-gradient(135deg, #FF4B4B 0%, #FF2B2B 100%);
+        background: linear-gradient(135deg, #00C851 0%, #007E33 100%);
         color: white; 
         border: none; 
-        padding: 14px; 
+        padding: 16px; 
         font-size: 16px; 
         font-weight: bold; 
         border-radius: 8px; 
         cursor: pointer;
-        box-shadow: 0px 4px 15px rgba(255,75,75,0.4);
-        transition: all 0.2s ease;
-    ">📋 Copy Review & Go to Google Maps 🚀</button>
+        box-shadow: 0px 4px 15px rgba(0,200,81,0.4);
+    ">🟢 Click Here to Start Auto-Copy & Open Maps 🚀</button>
 
     <script>
     document.getElementById('combo-btn').addEventListener('click', function() {{
         const textToCopy = `{js_safe_review}`;
         
-        // Command 1: Force background clipboard storage natively
+        // Step 1: Copy to device clipboard instantly
         navigator.clipboard.writeText(textToCopy).then(function() {{
-            // Command 2: Instantly trigger cross-tab deep-linking redirection
+            
+            # Step 2: The Mental Anchor Alert Box that intercepts the layman
+            alert("📋 REVIEW COPIED SUCCESSFULLY!\\n\\nDear Customer, agli screen par ja kar likhnay ki koi zaroorat nahi hai. Bas box par ungli daba kar rakhain (Long Press) aur PASTE par click kar dain!\\n\\nAb OK dabo kar Google Maps par jain. 👍");
+            
+            // Step 3: Launch Google Maps tab cleanly after user clicks OK
             window.open('{target_url}', '_blank');
         }}).catch(function(err) {{
-            // Secure fallback redirection if browser restricts clipboard sandbox
             window.open('{target_url}', '_blank');
         }});
     }});
     </script>
     """
     
-    # Rendering the specialized JS combo component
-    components.html(js_button_code, height=80)
+    components.html(js_button_code, height=90)
 
 # ==========================================
 # INTERFACE 1: CUSTOMER FEEDBACK STATION
@@ -94,14 +98,13 @@ if app_mode == "Customer Station 🧑‍💻":
     st.markdown("### 📝 Customer Feedback Station")
     st.caption(f"Review being generated securely for: **{shop_name}**")
 
-    category = st.text_input("Aapne kya khareeda? (Optional):", placeholder="Eg: HP Elitebook, Core i7 Laptop")
+    category = st.text_input("Aapne kya khareeda? (Optional):", placeholder="Eg: HP Laptop, Core i7")
     user_input = st.text_area(
         "Aapka hamari dukan par experience kaisa raha? (Roman Urdu ya Pashto mein likhein):",
         placeholder="Eg: dukaandar ka behaviour zbrdst tha aur price bhi sahi thi..."
     )
 
-    # Friendly, premium customer-facing click target
-    if st.button("✨ Create Review ", use_container_width=True):
+    if st.button("✨ Mera Review Banayein", use_container_width=True):
         if user_input.strip() == "":
             st.warning("Meharbani kar ke pehle thora sa apna feedback likhein.")
         else:
@@ -116,7 +119,7 @@ if app_mode == "Customer Station 🧑‍💻":
                 
                 CRITICAL LINGUISTIC INSTRUCTIONS FOR LAYMAN AUTHENTICITY:
                 1. Use natural, conversational vocabulary (e.g., "fair pricing", "genuine items", "honest dealing", "trusted wholesaler", "highly recommend").
-                2. Keep sentence structures brief and entirely grounded in the facts input by the user. Avoid technical or robotic fluff.
+                2. Sentence structure must be incredibly simple, as if written by a regular walk-in local consumer. No complex tech terminology.
                 3. Output ONLY the clean review text.
                 """
                 
@@ -138,15 +141,14 @@ if app_mode == "Customer Station 🧑‍💻":
                 if response and response.text:
                     generated_text = response.text.strip()
                     
-                    # Log monitoring data
                     now = datetime.datetime.now().strftime("%I:%M %p")
                     st.session_state.review_logs.append({
                         "time": now,
                         "item": category if category else "General Hardware",
-                        "status": "Combo Triggered"
+                        "status": "Interceptor Fired"
                     })
                     
-                    # Trigger the advanced hybrid JS popup modal
+                    # Triggering the secure modal guide
                     show_combo_popup(generated_text, gmb_url)
 
 # ==========================================
@@ -170,4 +172,4 @@ elif app_mode == "Merchant Dashboard 📊":
     st.dataframe(st.session_state.review_logs, use_container_width=True)
 
 st.write("---")
-st.caption("VeriRank AI v4.4 | JavaScript Combo Integration Layer | Google-Kaggle Bootcamp Submission")
+st.caption("VeriRank AI v4.5 | Interceptor UX Layer | Google-Kaggle Bootcamp Submission")
