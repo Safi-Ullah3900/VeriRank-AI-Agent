@@ -100,11 +100,11 @@ if app_mode == "Customer Station 🧑‍💻":
 
     category = st.text_input("Aapne kya khareeda? (Optional):", placeholder="Eg: HP Laptop, Core i7")
     user_input = st.text_area(
-        "Aapka hamari dukan par experience kaisa raha? (Roman Urdu ya Pashto mein likhein):",
+        "Aapka hamari dukan par experience kaisa raha? (Englis/Urdu ya Pashto mein likhein):",
         placeholder="Eg: dukaandar ka behaviour zbrdst tha aur price bhi sahi thi..."
     )
 
-    if st.button("✨ Mera Review Banayein", use_container_width=True):
+    if st.button("✨ Get Review ", use_container_width=True):
         if user_input.strip() == "":
             st.warning("Meharbani kar ke pehle thora sa apna feedback likhein.")
         else:
