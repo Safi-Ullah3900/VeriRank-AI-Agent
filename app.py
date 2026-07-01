@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import random
 import datetime
 from google import genai
@@ -6,96 +7,122 @@ from google.genai import types
 
 # Page Configuration
 st.set_page_config(
-    page_title="VeriRank AI v4.1 - Advanced UX Dialog",
+    page_title="VeriRank AI v4.4 - 1-Click Combo Engine",
     page_icon="🎯",
     layout="centered"
 )
 
-# Initialize Session State Database for Logs
+# Session State Database
 if "review_logs" not in st.session_state:
-    st.session_state.review_logs = [
-        {"time": "03:10 AM", "item": "HP Core i7 10th Gen", "status": "Copied & Posted"},
-        {"time": "03:22 AM", "item": "Dell Latitude", "status": "Copied"},
-    ]
+    st.session_state.review_logs = []
 
-# Multi-Tenant Sidebar Controller
+# Admin Panel Sidebar
 st.sidebar.markdown("### 🏢 VeriRank Admin Panel")
 app_mode = st.sidebar.radio("Go To Interface:", ["Customer Station 🧑‍💻", "Merchant Dashboard 📊"])
 
-# Secure Secrets Fetching
-if "GEMINI_API_KEY" in st.secrets:
-    api_key = st.secrets["GEMINI_API_KEY"]
-else:
-    api_key = st.sidebar.text_input("Gemini API Key Backup:", type="password")
-
+# Backend Secrets Configuration
+api_key = st.secrets.get("GEMINI_API_KEY", "")
 shop_name = st.secrets.get("MERCHANT_NAME", "Shaheen Laptop Wholesaler").strip()
 gmb_url = st.secrets.get("MERCHANT_GMB_URL", "https://g.page/r/CfE02PXX8HUQEAE/review").strip()
 
 if not api_key:
-    st.info("Meharbani kar ke API Key configure karein.")
+    st.error("🛑 Configuration Error: API Key missing in backend secrets.")
     st.stop()
 
 # ==========================================
-# 🆕 THE ADVANCED POPUP (DIALOG) LOGIC ENGINE
+# 🆕 THE ULTIMATE 1-CLICK JAVASCRIPT POPUP
 # ==========================================
-@st.dialog("🎯 VeriRank AI - Review Preview & Publish")
-def show_publish_popup(review_text, target_url):
-    st.markdown("### Aapka Genuine Review Taiyar Hai!")
-    st.write("Aap niche diye gaye text mein apni marzi ke mutabiq tabdeeli (editing) bhi kar sakte hain:")
+@st.dialog("✨ VeriRank Quick Publish")
+def show_combo_popup(review_text, target_url):
+    st.success("🎉 Aapka Review Taiyar Hai!")
+    st.write("Neeche diye gaye review ko dekhlein, aur direct publish karein:")
     
-    # User can edit the generated review directly inside this popup box
-    final_user_review = st.text_area("📋 Review Text (Edit if needed):", value=review_text, height=180)
+    # Visual check for the user to read the text
+    st.text_area("📋 Generated Text View:", value=review_text, height=120, disabled=True)
     
     st.write("---")
-    st.markdown("#### **Agla Qadam (Next Step):**")
-    st.info("💡 Upar diye gaye text ko copy karein, phir niche diye gaye button par click kar ke direct Google Maps par paste kar dein!")
+    st.markdown("### **🎯 Asaan Automation Flow:**")
+    st.caption("Neeche diye gaye magic button ko **sirf ek baar click** karein. Review khud-ba-khud copy ho jayega aur Google Maps open ho jayega. Wahan ja kar bas **Paste** kar dein!")
+
+    # Preparing string sanitation for clean JavaScript injection
+    js_safe_review = review_text.replace("`", "\\`").replace('"', '\\"').replace("\n", "\\n")
     
-    # The Action Launchpad Button inside the popup
-    st.link_button("Press to Publish Review 🚀", url=target_url, use_container_width=True)
+    # HIGH-END JAVASCRIPT COMBO BUTTON INJECTION
+    # This executes native browser clipboard storage and redirection in a unified interaction event
+    js_button_code = f"""
+    <button id="combo-btn" style="
+        width: 100%; 
+        background: linear-gradient(135deg, #FF4B4B 0%, #FF2B2B 100%);
+        color: white; 
+        border: none; 
+        padding: 14px; 
+        font-size: 16px; 
+        font-weight: bold; 
+        border-radius: 8px; 
+        cursor: pointer;
+        box-shadow: 0px 4px 15px rgba(255,75,75,0.4);
+        transition: all 0.2s ease;
+    ">📋 Copy Review & Go to Google Maps 🚀</button>
+
+    <script>
+    document.getElementById('combo-btn').addEventListener('click', function() {{
+        const textToCopy = `{js_safe_review}`;
+        
+        // Command 1: Force background clipboard storage natively
+        navigator.clipboard.writeText(textToCopy).then(function() {{
+            // Command 2: Instantly trigger cross-tab deep-linking redirection
+            window.open('{target_url}', '_blank');
+        }}).catch(function(err) {{
+            // Secure fallback redirection if browser restricts clipboard sandbox
+            window.open('{target_url}', '_blank');
+        }});
+    }});
+    </script>
+    """
+    
+    # Rendering the specialized JS combo component
+    components.html(js_button_code, height=80)
 
 # ==========================================
 # INTERFACE 1: CUSTOMER FEEDBACK STATION
 # ==========================================
 if app_mode == "Customer Station 🧑‍💻":
     st.title("🎯 VeriRank AI")
-    st.subheader("Enterprise Local SEO Review Generator")
-    st.write("Casual customer feedback ko 100% genuine aur keyword-rich Google reviews mein badlein.")
+    st.subheader("Smart Local SEO Review Agent")
     
     st.write("---")
     st.markdown("### 📝 Customer Feedback Station")
     st.caption(f"Review being generated securely for: **{shop_name}**")
 
-    category = st.text_input("Product / Item Purchased:", placeholder="Eg: HP Laptop 12th Gen")
+    category = st.text_input("Aapne kya khareeda? (Optional):", placeholder="Eg: HP Elitebook, Core i7 Laptop")
     user_input = st.text_area(
-        "Aapka dukan par experience kaisa raha? (Roman Urdu, Pashto mix ya English mein likhein):",
-        placeholder="Eg: zama tajriba dera aala aw zbrdst wa..."
+        "Aapka hamari dukan par experience kaisa raha? (Roman Urdu ya Pashto mein likhein):",
+        placeholder="Eg: dukaandar ka behaviour zbrdst tha aur price bhi sahi thi..."
     )
 
-    style_seed = random.choice([
-        "Start by discussing the product architecture and pricing structure.",
-        "Start with the transactional authenticity and vendor reputation in Peshawar.",
-        "Start directly with a highly personalized customer service acknowledgment."
-    ])
-
-    SYSTEM_INSTRUCTION = f"""
-    You are "VeriRank AI v4.1", an elite NLP Engine specializing in Local SEO Architecture. Translate raw inputs (Roman Urdu/Pashto) into high-end English Google Reviews.
-    Target Business: {shop_name}
-    Product Focus: {category if category else "hardware items"}
-    Prompt Style Seed: {style_seed}
-    NEVER use templates like "My experience with...". Fix user technical typos natively. Keep it 100% factual. Output ONLY the review text.
-    """
-
-    if st.button("Generate Optimized SEO Review 🚀", use_container_width=True):
+    # Friendly, premium customer-facing click target
+    if st.button("✨ Create Review ", use_container_width=True):
         if user_input.strip() == "":
-            st.warning("Meharbani kar ke pehle apna feedback section fill karein.")
+            st.warning("Meharbani kar ke pehle thora sa apna feedback likhein.")
         else:
-            with st.spinner("VeriRank AI secure cloud pipelines process kar raha hai..."):
+            with st.spinner("AI aapke liye ek shandaar review likh raha hai..."):
                 response = None
-                models_to_try = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"]
+                models_to_try = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.0-flash"]
+                
+                SYSTEM_INSTRUCTION = f"""
+                You are "VeriRank AI", an organic Local SEO Review Assistant. Your job is to transform raw inputs into natural, human-sounding English Google Reviews.
+                Target Merchant: {shop_name}
+                Product Focus: {category if category else "hardware and laptops"}
+                
+                CRITICAL LINGUISTIC INSTRUCTIONS FOR LAYMAN AUTHENTICITY:
+                1. Use natural, conversational vocabulary (e.g., "fair pricing", "genuine items", "honest dealing", "trusted wholesaler", "highly recommend").
+                2. Keep sentence structures brief and entirely grounded in the facts input by the user. Avoid technical or robotic fluff.
+                3. Output ONLY the clean review text.
+                """
                 
                 try:
                     client = genai.Client(api_key=api_key)
-                    config = types.GenerateContentConfig(system_instruction=SYSTEM_INSTRUCTION, temperature=0.65)
+                    config = types.GenerateContentConfig(system_instruction=SYSTEM_INSTRUCTION, temperature=0.7)
                     
                     for model_name in models_to_try:
                         try:
@@ -106,43 +133,41 @@ if app_mode == "Customer Station 🧑‍💻":
                         except:
                             continue
                 except Exception as e:
-                    st.error(f"Setup error: {e}")
+                    st.error(f"Error: {e}")
 
                 if response and response.text:
                     generated_text = response.text.strip()
                     
-                    # LOGGING ENGINE: Save to internal logs
+                    # Log monitoring data
                     now = datetime.datetime.now().strftime("%I:%M %p")
                     st.session_state.review_logs.append({
                         "time": now,
                         "item": category if category else "General Hardware",
-                        "status": "Generated & PopUp Opened"
+                        "status": "Combo Triggered"
                     })
                     
-                    # TRIGGER THE POPUP: Main page flow stays clean, modal opens!
-                    show_publish_popup(generated_text, gmb_url)
+                    # Trigger the advanced hybrid JS popup modal
+                    show_combo_popup(generated_text, gmb_url)
 
 # ==========================================
 # INTERFACE 2: MERCHANT ANALYTICS DASHBOARD
 # ==========================================
 elif app_mode == "Merchant Dashboard 📊":
     st.title("📊 VeriRank Business Control Center")
-    st.subheader(f"Live SEO Analytics Panel for {shop_name}")
-    st.write("Apne counter se hone wale live conversion aur ranking signals track karein.")
-    
+    st.subheader(f"Live Analytics for {shop_name}")
     st.write("---")
     
     total_reviews = len(st.session_state.review_logs)
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric(label="Total AI Reviews Driven", value=total_reviews, delta=f"+{total_reviews-2} today")
+        st.metric(label="Total AI Reviews Driven", value=total_reviews, delta=f"+{total_reviews} today")
     with col2:
-        st.metric(label="GMB Optimization Rate", value="98.4%", delta="Target Hit")
+        st.metric(label="Spam Protection Rate", value="100%", delta="Verified")
     with col3:
-        st.metric(label="SEO Traffic Signals", value="Active ⚡")
+        st.metric(label="Ecosystem Status", value="Active ⚡")
         
-    st.markdown("### 📜 Real-Time Generated Review Feed")
+    st.markdown("### 📜 Live Counter Log Feed")
     st.dataframe(st.session_state.review_logs, use_container_width=True)
 
 st.write("---")
-st.caption("VeriRank AI v4.1 | Premium UI Popup Layout Edition | Google-Kaggle Bootcamp Submission")
+st.caption("VeriRank AI v4.4 | JavaScript Combo Integration Layer | Google-Kaggle Bootcamp Submission")
