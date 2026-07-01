@@ -29,7 +29,7 @@ else:
     api_key = st.sidebar.text_input("Gemini API Key Backup:", type="password")
 
 shop_name = st.secrets.get("MERCHANT_NAME", "Shaheen Laptop Wholesaler").strip()
-gmb_url = st.secrets.get("MERCHANT_GMB_URL", "https://g.page/r/CfE02PXX8HUQEAE/review").strip()
+gmb_url = st.secrets.get("MERCHANT_GMB_URL", "https://g.page/r/CfE02PXX8HUQECE/review").strip()
 
 if not api_key:
     st.info("Meharbani kar ke API Key configure karein.")
